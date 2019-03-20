@@ -30,3 +30,4 @@ void Logger::log(std::string data) {
 	if (myFile.is_open())
 		myFile.close();
 }
+
