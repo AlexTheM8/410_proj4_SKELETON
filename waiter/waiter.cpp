@@ -1,3 +1,7 @@
+/**
+ * Author: Alexander Rhodes
+ * March 21, 2019
+ */
 #include <string>
 #include "stdlib.h"
 
