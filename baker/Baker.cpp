@@ -17,8 +17,12 @@ Baker::~Baker() {
 }
 
 void Baker::bake_and_box(ORDER &anOrder) {
-	// # of boxes = # of donuts / 12, +1 due to rounding
-	int numBoxes = (anOrder.number_donuts / 12) + 1;
+	// # of boxes = # of donuts / 12
+	int numBoxes = (anOrder.number_donuts / 12);
+	// Add 1 box if not exactly a dozen
+	if (anOrder.number_donuts % 12 != 0) {
+		numBoxes++;
+	}
 	int numDonuts = anOrder.number_donuts;
 	//For each box, add donuts until full, then move to the next box
 	vector<Box> tempVect;
@@ -29,15 +33,13 @@ void Baker::bake_and_box(ORDER &anOrder) {
 		while (numDonuts > 0 && box.addDonut(donut))
 			numDonuts--;
 		//Add to the order's completed boxes
-		//tempVect.push_back(box);
-		anOrder.boxes.push_back(box); //TODO ERROR SECTION
+		anOrder.boxes.push_back(box);
 	}
-	//anOrder.boxes = tempVect; //TODO check why you can't access vector directly
 }
 
 void Baker::beBaker() {
 	//Wait until there's an order or waiter is finished
-	while(!order_in_Q.empty() || !b_WaiterIsFinished) {
+	while (!order_in_Q.empty() || !b_WaiterIsFinished) {
 		//Lock to wait for CV
 		unique_lock<mutex> lockOrderIn(mutex_order_inQ);
 
@@ -56,10 +58,9 @@ void Baker::beBaker() {
 			lockOrderOut.unlock();
 
 			order_in_Q.pop();
-
-			//Unlock and notify
-			lockOrderIn.unlock();
-			cv_order_inQ.notify_all();
 		}
+		//Unlock and notify
+		lockOrderIn.unlock();
+		cv_order_inQ.notify_all();
 	}
 }
